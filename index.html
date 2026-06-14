@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Karesa — Asset Management & Global Macro</title>
+<meta name="description" content="Fundamental judgment and systematic execution at the seam of asset management and global macro." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,300;1,6..72,400;1,6..72,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    /* --- palette: ink + cool paper + celadon (青) --- */
+    --ink:        #1B1E1C;   /* near-black, cool */
+    --ink-soft:   #242A26;   /* dark pine, feature sections */
+    --paper:      #ECEEE9;   /* cool off-white (NOT cream) */
+    --paper-raised:#F4F5F1;
+    --celadon:    #6E8E7E;   /* muted sage-celadon, marks & fills */
+    --celadon-deep:#46685A;  /* accent for text / links on light */
+    --stone:      #767A72;   /* secondary text, rules */
+    --line:       rgba(27,30,28,.13);
+    --line-strong:rgba(27,30,28,.22);
+
+    --serif: "Newsreader", Georgia, serif;
+    --mono:  "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+
+    --maxw: 1060px;
+    --gut: clamp(22px, 5vw, 64px);
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--serif);
+    font-size:clamp(16px,1.05vw,18px);
+    line-height:1.62;
+    font-weight:400;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  a{ color:inherit; }
+  ::selection{ background:rgba(110,142,126,.28); }
+
+  .wrap{ max-width:var(--maxw); margin:0 auto; padding-inline:var(--gut); }
+
+  /* --- utility / mono labels --- */
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.72rem;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--celadon-deep);
+    font-weight:500;
+  }
+  .mono{ font-family:var(--mono); }
+
+  /* ============ regime band (signature motif) ============ */
+  .band{ display:flex; gap:3px; align-items:flex-end; height:34px; }
+  .band .cell{
+    flex:1;
+    background:var(--celadon);
+    border-radius:1px;
+    transform-origin:bottom;
+    transform:scaleY(.18);
+    opacity:.45;
+    animation:settle .9s cubic-bezier(.22,.61,.36,1) forwards;
+  }
+  @keyframes settle{ to{ transform:scaleY(var(--h)); opacity:var(--o); } }
+  .band.mini{ height:14px; gap:2px; }
+  @media (prefers-reduced-motion: reduce){
+    .band .cell{ animation:none; transform:scaleY(var(--h)); opacity:var(--o); }
+  }
+
+  /* ===================== header ===================== */
+  header.top{
+    position:sticky; top:0; z-index:20;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:color-mix(in srgb, var(--paper) 82%, transparent);
+    border-bottom:1px solid var(--line);
+  }
+  .top .wrap{ display:flex; align-items:center; justify-content:space-between; height:62px; }
+  .brand{ font-family:var(--mono); font-size:.82rem; letter-spacing:.04em; text-decoration:none; }
+  .brand b{ font-weight:500; }
+  nav.links{ display:flex; gap:26px; }
+  nav.links a{
+    font-family:var(--mono); font-size:.74rem; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--stone); text-decoration:none;
+    transition:color .2s;
+  }
+  nav.links a:hover{ color:var(--ink); }
+  @media (max-width:620px){ nav.links{ display:none; } }
+
+  /* ===================== hero ===================== */
+  .hero{ padding-top:clamp(64px,11vh,128px); padding-bottom:clamp(54px,8vh,92px); }
+  .hero .band{ max-width:520px; margin-bottom:38px; }
+  .hero h1{
+    font-weight:300;
+    font-size:clamp(2rem,4.6vw,3.7rem);
+    line-height:1.14;
+    letter-spacing:-.012em;
+    margin:.2em 0 0;
+    max-width:18ch;
+  }
+  .hero h1 em{ font-style:italic; font-weight:400; color:var(--celadon-deep); }
+  .hero .who{
+    margin-top:34px; display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 18px;
+  }
+  .hero .name{ font-size:1.18rem; font-weight:500; }
+  .hero .locate{ font-family:var(--mono); font-size:.76rem; color:var(--stone); letter-spacing:.02em; }
+
+  /* reveal */
+  .reveal{ opacity:0; transform:translateY(14px); }
+  .revealed{ opacity:1; transform:none; transition:opacity .7s ease, transform .7s cubic-bezier(.22,.61,.36,1); }
+  @media (prefers-reduced-motion: reduce){
+    .reveal{ opacity:1; transform:none; }
+  }
+
+  /* ===================== section frame ===================== */
+  section{ padding-block:clamp(56px,8vh,104px); border-top:1px solid var(--line); }
+  .sec-head{ display:grid; grid-template-columns:160px 1fr; gap:var(--gut); align-items:start; margin-bottom:48px; }
+  .sec-head .num{ font-family:var(--mono); font-size:.74rem; color:var(--stone); letter-spacing:.1em; padding-top:.5em; }
+  .sec-head h2{ font-weight:400; font-size:clamp(1.5rem,2.6vw,2.1rem); line-height:1.2; margin:0; letter-spacing:-.01em; max-width:20ch; }
+  .sec-head p{ margin:.7em 0 0; color:var(--stone); font-size:1rem; max-width:46ch; }
+  @media (max-width:720px){ .sec-head{ grid-template-columns:1fr; gap:14px; } }
+
+  /* ===================== about ===================== */
+  .about-grid{ display:grid; grid-template-columns:160px 1fr; gap:var(--gut); }
+  .about-grid .body{ max-width:58ch; }
+  .about-grid .body p{ margin:0 0 1.1em; }
+  .about-grid .body p:first-child{ font-size:1.18rem; line-height:1.5; }
+  .about-grid .aside{ font-family:var(--mono); font-size:.78rem; color:var(--stone); line-height:1.9; }
+  .about-grid .aside .k{ display:block; color:var(--celadon-deep); letter-spacing:.06em; text-transform:uppercase; font-size:.68rem; margin-top:1.3em; }
+  .about-grid .aside .k:first-child{ margin-top:0; }
+  @media (max-width:720px){ .about-grid{ grid-template-columns:1fr; gap:28px; } }
+
+  /* ===================== work ledger ===================== */
+  .ledger{ border-top:1px solid var(--line-strong); }
+  .item{
+    display:grid; grid-template-columns:160px 1fr auto; gap:var(--gut);
+    align-items:baseline; padding:26px 0; border-bottom:1px solid var(--line);
+    text-decoration:none; color:inherit; position:relative;
+    transition:padding-left .25s ease;
+  }
+  .item:hover{ padding-left:14px; }
+  .item .tag{ font-family:var(--mono); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--celadon-deep); }
+  .item h3{ font-weight:500; font-size:1.22rem; margin:0; line-height:1.25; }
+  .item h3 .sub{ display:block; font-weight:400; font-size:.96rem; color:var(--stone); margin-top:.25em; line-height:1.4; max-width:52ch; }
+  .item .meta{ font-family:var(--mono); font-size:.72rem; color:var(--stone); white-space:nowrap; }
+  .item .arrow{ font-family:var(--mono); color:var(--celadon-deep); opacity:0; transition:opacity .25s; }
+  .item:hover .arrow{ opacity:1; }
+  @media (max-width:720px){
+    .item{ grid-template-columns:1fr; gap:6px; padding:22px 0; }
+    .item .meta{ order:3; }
+  }
+
+  /* ===================== demo (the window) ===================== */
+  .demo-sec{ background:var(--ink-soft); color:var(--paper); border-top:1px solid var(--line); }
+  .demo-sec .eyebrow{ color:#9DBBAC; }
+  .demo-sec .sec-head h2{ color:var(--paper); }
+  .demo-sec .sec-head .num{ color:#6F7A73; }
+  .demo-sec .sec-head p{ color:#A7ADA5; }
+  .frame{
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:6px;
+    background:#1A1F1C;
+    overflow:hidden;
+  }
+  .frame-bar{
+    display:flex; align-items:center; gap:14px;
+    padding:11px 16px; border-bottom:1px solid rgba(255,255,255,.1);
+    font-family:var(--mono); font-size:.72rem; color:#8E978F; letter-spacing:.04em;
+  }
+  .frame-bar .dot{ width:9px; height:9px; border-radius:50%; background:#3A433D; }
+  .frame-bar .url{ color:#C8CFC8; }
+  .frame-bar .live{ margin-left:auto; color:var(--celadon); display:flex; align-items:center; gap:7px; }
+  .frame-bar .live::before{ content:""; width:7px; height:7px; border-radius:50%; background:var(--celadon); box-shadow:0 0 0 0 rgba(110,142,126,.6); animation:pulse 2.4s infinite; }
+  @keyframes pulse{ 70%{ box-shadow:0 0 0 7px rgba(110,142,126,0);} 100%{ box-shadow:0 0 0 0 rgba(110,142,126,0);} }
+  @media (prefers-reduced-motion: reduce){ .frame-bar .live::before{ animation:none; } }
+
+  /* === placeholder live readout (swap for your real <iframe>) === */
+  .readout{ padding:26px clamp(18px,3vw,34px) 30px; }
+  .readout .row{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-bottom:26px; }
+  .stat .lbl{ font-family:var(--mono); font-size:.66rem; letter-spacing:.12em; text-transform:uppercase; color:#7E887F; }
+  .stat .val{ font-family:var(--serif); font-size:1.5rem; margin-top:5px; color:var(--paper); font-weight:400; }
+  .stat .val.gate-open{ color:var(--celadon); }
+  .chart-wrap{ position:relative; border-top:1px solid rgba(255,255,255,.08); padding-top:22px; }
+  .chart-wrap .clab{ font-family:var(--mono); font-size:.66rem; letter-spacing:.1em; text-transform:uppercase; color:#7E887F; margin-bottom:10px; }
+  canvas#spark{ width:100%; height:120px; display:block; }
+  .regime-strip{ display:flex; gap:2px; margin-top:18px; height:20px; }
+  .regime-strip span{ flex:1; border-radius:1px; opacity:.85; transition:background .6s ease; }
+  .demo-note{ font-family:var(--mono); font-size:.72rem; color:#8E978F; margin-top:22px; line-height:1.7; }
+  .demo-note code{ color:var(--celadon); background:rgba(110,142,126,.12); padding:1px 5px; border-radius:3px; }
+  @media (max-width:560px){ .readout .row{ grid-template-columns:1fr 1fr; gap:18px; } }
+
+  /* ===================== notes ===================== */
+  .note-row{ display:grid; grid-template-columns:160px 1fr auto; gap:var(--gut); align-items:baseline; padding:20px 0; border-bottom:1px solid var(--line); text-decoration:none; color:inherit; }
+  .note-row:first-of-type{ border-top:1px solid var(--line-strong); }
+  .note-row .date{ font-family:var(--mono); font-size:.72rem; color:var(--stone); letter-spacing:.04em; }
+  .note-row h3{ font-weight:400; font-size:1.1rem; margin:0; }
+  .note-row .read{ font-family:var(--mono); font-size:.7rem; color:var(--stone); }
+  @media (max-width:720px){ .note-row{ grid-template-columns:1fr; gap:5px; } }
+
+  /* ===================== contact ===================== */
+  .contact{ border-top:1px solid var(--line); }
+  .contact .lede{ font-size:clamp(1.4rem,3vw,2.1rem); font-weight:300; line-height:1.3; max-width:22ch; letter-spacing:-.01em; }
+  .contact .lede em{ font-style:italic; color:var(--celadon-deep); }
+  .contact-links{ margin-top:36px; display:flex; flex-wrap:wrap; gap:14px 32px; }
+  .contact-links a{
+    font-family:var(--mono); font-size:.82rem; letter-spacing:.03em; text-decoration:none;
+    color:var(--ink); border-bottom:1px solid var(--celadon); padding-bottom:3px;
+    transition:color .2s, border-color .2s;
+  }
+  .contact-links a:hover{ color:var(--celadon-deep); border-color:var(--celadon-deep); }
+
+  footer{ border-top:1px solid var(--line); padding-block:34px; }
+  footer .wrap{ display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+  footer .mono{ font-size:.72rem; color:var(--stone); letter-spacing:.04em; }
+  footer .band.mini{ width:120px; }
+
+  :focus-visible{ outline:2px solid var(--celadon-deep); outline-offset:3px; border-radius:2px; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top"><b>Karesa</b> <span style="color:var(--stone)">/ asset management · macro</span></a>
+    <nav class="links">
+      <a href="#about">About</a>
+      <a href="#judgment">Judgment</a>
+      <a href="#systems">Systems</a>
+      <a href="#demo">Live</a>
+      <a href="views.html">Views</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" style="border-top:none">
+    <div class="wrap">
+      <div class="band reveal" id="heroBand" aria-hidden="true"></div>
+      <p class="eyebrow reveal">Asset management · Global macro</p>
+      <h1 class="reveal">
+        Markets move in <em>regimes</em>. The work is reading which one you're in —
+        and holding both the <em>judgment</em> and the <em>systems</em> to act before the room agrees.
+      </h1>
+      <div class="who reveal">
+        <!-- TODO: replace with your full name -->
+        <span class="name">Karesa&nbsp;<span style="color:var(--stone)">[ Surname ]</span></span>
+        <span class="locate">MSc Finance &amp; Accounting, Imperial College London · London</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ABOUT ============ -->
+  <section id="about">
+    <div class="wrap about-grid">
+      <p class="eyebrow">About</p>
+      <div>
+        <div class="body">
+          <p>I work at the seam between fundamental judgment and systematic execution — the analyst's read of a business and the engineer's discipline of a tested process, applied to the same question: where is the cycle, and what is mispriced because of it.</p>
+          <p>My focus is asset management and global macro. On the discretionary side, that means valuation and contrarian theses built bottom-up. On the systematic side, it means regime-aware strategies I design, code, and run live — with the model deciding when <em>not</em> to trade treated as seriously as when to.</p>
+          <p>I'm a US citizen based in London, completing my MSc at Imperial and open to roles where both halves of that work are valued.</p>
+        </div>
+        <div class="aside" style="margin-top:34px">
+          <span class="k">Education</span>
+          MSc Finance &amp; Accounting — Imperial College London<br>
+          BA Business Administration — UC Irvine (Dean's Honor List)
+          <span class="k">Interests</span>
+          Global macro · systematic strategy · equity research<br>
+          Markets as cycles · the discipline of restraint
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ JUDGMENT (fundamental) ============ -->
+  <section id="judgment">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">01 / Judgment</span>
+        <div>
+          <h2>Fundamental work</h2>
+          <p>Selected equity, valuation, and M&amp;A analysis. Replace each link with a live deck, write-up, or PDF.</p>
+        </div>
+      </div>
+      <div class="ledger">
+        <!-- Each item links out to a deck / PDF / write-up. Swap the href. -->
+        <a class="item" href="#" >
+          <span class="tag">Equity · Contrarian</span>
+          <h3>GE Vernova <span class="sub">A bottom-up thesis on the power-and-grid build-out the consensus underwrote too late.</span></h3>
+          <span class="meta">Write-up →</span>
+          <span class="arrow">↗</span>
+        </a>
+        <a class="item" href="#">
+          <span class="tag">Equity · Pitch</span>
+          <h3>Joby Aviation <span class="sub">Valuation and risk framing for a pre-revenue eVTOL name — optionality priced against a binary.</span></h3>
+          <span class="meta">Deck →</span>
+          <span class="arrow">↗</span>
+        </a>
+        <a class="item" href="#">
+          <span class="tag">Equity · Pitch</span>
+          <h3>Vistra <span class="sub">Independent power producer thesis on the demand step-change from data-center load growth.</span></h3>
+          <span class="meta">Deck →</span>
+          <span class="arrow">↗</span>
+        </a>
+        <a class="item" href="#">
+          <span class="tag">Valuation</span>
+          <h3>Rightmove <span class="sub">DCF and relative valuation of a UK marketplace with a wide moat and a re-rating debate.</span></h3>
+          <span class="meta">Model →</span>
+          <span class="arrow">↗</span>
+        </a>
+        <a class="item" href="#">
+          <span class="tag">M&amp;A</span>
+          <h3>Novozymes / Chr. Hansen <span class="sub">Deal analysis of the biosolutions merger — synergy case, accretion, and the regulatory path.</span></h3>
+          <span class="meta">Analysis →</span>
+          <span class="arrow">↗</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SYSTEMS (quant) ============ -->
+  <section id="systems">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">02 / Systems</span>
+        <div>
+          <h2>Systematic work</h2>
+          <p>Strategies and tooling I design and run. Public demos use historical or sample data — live systems and credentials stay private.</p>
+        </div>
+      </div>
+      <div class="ledger">
+        <a class="item" href="#demo">
+          <span class="tag">Live agent</span>
+          <h3>IQ <span class="sub">A multi-strategy execution agent: regime-gating decides when the book is open, with a reasoning layer that filters likely traps before sizing.</span></h3>
+          <span class="meta">See it live ↓</span>
+          <span class="arrow">↗</span>
+        </a>
+        <a class="item" href="#">
+          <span class="tag">Research tool</span>
+          <h3>Signal discovery platform <span class="sub">A cross-asset interface for surfacing and stress-testing candidate signals before anything reaches a live book.</span></h3>
+          <span class="meta">Demo →</span>
+          <span class="arrow">↗</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ THE WINDOW (live demo) ============ -->
+  <section id="demo" class="demo-sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">03 / Live</span>
+        <div>
+          <h2>A window into the systems</h2>
+          <p>An embedded, sample readout below. To show a real project, replace the panel with an iframe pointing at your deployed demo.</p>
+        </div>
+      </div>
+
+      <!--
+        ┌──────────────────────────────────────────────────────────────┐
+        │  TO EMBED YOUR REAL DEMO:                                      │
+        │  Delete the <div class="readout">…</div> block below and drop  │
+        │  in your deployed app:                                         │
+        │                                                                │
+        │  <iframe src="https://iq-demo.vercel.app"                      │
+        │          style="width:100%;height:560px;border:0;"            │
+        │          loading="lazy" title="IQ — sample dashboard"></iframe>│
+        │                                                                │
+        │  Keep it a DEMO build: historical / sample data only, no API   │
+        │  keys in the browser, no live positions.                       │
+        └──────────────────────────────────────────────────────────────┘
+      -->
+      <div class="frame">
+        <div class="frame-bar">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url">iq-demo.vercel.app</span>
+          <span class="live">sample feed</span>
+        </div>
+
+        <!-- Live IQ demo (sample data) embedded from iq-demo.html in this repo -->
+        <iframe src="iq-demo.html" title="IQ — decision pipeline (sample data)"
+                loading="lazy" style="width:100%; height:760px; border:0; display:block; background:#171B18;"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VIEWS ============ -->
+  <section id="notes">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">04 / Views</span>
+        <div>
+          <h2>Macro views</h2>
+          <p>A dated record of how a market view took shape — bottom-up from a single name into a worldview.</p>
+        </div>
+      </div>
+      <div>
+        <a class="note-row" href="views.html">
+          <span class="date">2024 — 26</span>
+          <h3>How the view took shape — power, copper, gold, QT, Asia</h3>
+          <span class="read">Read the log →</span>
+        </a>
+        <a class="note-row" href="views.html">
+          <span class="date">Jun 2026</span>
+          <h3>The view, now — and the method behind it</h3>
+          <span class="read">Read →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section id="contact" class="contact">
+    <div class="wrap">
+      <p class="eyebrow">Contact</p>
+      <p class="lede">Open to asset management and global macro roles — and to a <em>good conversation</em> regardless.</p>
+      <div class="contact-links">
+        <!-- TODO: fill these in -->
+        <a href="mailto:you@email.com">you@email.com</a>
+        <a href="https://linkedin.com/in/your-handle" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="/Karesa-CV.pdf" target="_blank" rel="noopener">Curriculum vitae (PDF)</a>
+        <a href="https://github.com/your-handle" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="mono">© <span id="yr"></span> Karesa · London</span>
+    <div class="band mini" aria-hidden="true"></div>
+    <span class="mono">Built and maintained by hand.</span>
+  </div>
+</footer>
+
+<script>
+  // ---- year ----
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- regime band: build cells with varied height/opacity ----
+  function fillBand(el, n){
+    for(let i=0;i<n;i++){
+      const c=document.createElement('span');
+      c.className='cell';
+      const h=0.25+Math.random()*0.75;
+      const o=0.30+Math.random()*0.55;
+      c.style.setProperty('--h',h.toFixed(2));
+      c.style.setProperty('--o',o.toFixed(2));
+      c.style.animationDelay=(i*0.022).toFixed(3)+'s';
+      el.appendChild(c);
+    }
+  }
+  document.querySelectorAll('.band').forEach(b=>{
+    fillBand(b, b.classList.contains('mini') ? 26 : 30);
+  });
+
+  // ---- scroll reveal ----
+  if(!reduce && 'IntersectionObserver' in window){
+    const io=new IntersectionObserver((es)=>{
+      es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('revealed'); io.unobserve(e.target); } });
+    },{threshold:.12});
+    document.querySelectorAll('.reveal').forEach((el,i)=>{ el.style.transitionDelay=(i*70)+'ms'; io.observe(el); });
+  } else {
+    document.querySelectorAll('.reveal').forEach(el=>el.classList.add('revealed'));
+  }
+
+  // ---- placeholder signal sparkline (illustrative) ----
+  (function(){
+    const cv=document.getElementById('spark'); if(!cv) return;
+    const ctx=cv.getContext('2d');
+    const W=cv.width, H=cv.height, N=120;
+    let data=[], t=0;
+    for(let i=0;i<N;i++) data.push(seed(i));
+    function seed(i){ return Math.sin(i/13)*0.5 + Math.sin(i/5)*0.18 + (Math.random()-0.5)*0.15; }
+
+    const regimes=[
+      {name:'Risk-on · trend', gate:'Open',     open:true,  col:'#6E8E7E'},
+      {name:'Chop · range',    gate:'Throttled', open:false, col:'#B98A52'},
+      {name:'Risk-off',        gate:'Flat',      open:false, col:'#9A6B63'}
+    ];
+    let r=0;
+    const strip=document.getElementById('regimeStrip');
+    const SEG=24;
+    for(let i=0;i<SEG;i++){ const s=document.createElement('span'); strip.appendChild(s); }
+    const segs=[...strip.children];
+
+    function paint(){
+      ctx.clearRect(0,0,W,H);
+      // baseline
+      ctx.strokeStyle='rgba(255,255,255,.08)'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(0,H/2); ctx.lineTo(W,H/2); ctx.stroke();
+      // area + line
+      const max=1.3, pad=10;
+      const x=i=> (i/(N-1))*W;
+      const y=v=> H-pad-((v+max)/(2*max))*(H-2*pad);
+      ctx.beginPath(); ctx.moveTo(0,H);
+      data.forEach((v,i)=>{ i?ctx.lineTo(x(i),y(v)):ctx.moveTo(x(i),y(v)); });
+      ctx.lineTo(W,H); ctx.closePath();
+      const g=ctx.createLinearGradient(0,0,0,H);
+      g.addColorStop(0,'rgba(110,142,126,.30)'); g.addColorStop(1,'rgba(110,142,126,0)');
+      ctx.fillStyle=g; ctx.fill();
+      ctx.beginPath();
+      data.forEach((v,i)=>{ i?ctx.lineTo(x(i),y(v)):ctx.moveTo(x(i),y(v)); });
+      ctx.strokeStyle=regimes[r].col; ctx.lineWidth=1.6; ctx.stroke();
+    }
+
+    function step(){
+      t++;
+      data.push(seed(N+t)); data.shift();
+      // occasional regime shift
+      if(t % 90 === 0){
+        r=(r+1)%regimes.length;
+        const R=regimes[r];
+        document.getElementById('regimeVal').textContent=R.name;
+        const gv=document.getElementById('gateVal');
+        gv.textContent=R.gate; gv.classList.toggle('gate-open', R.open);
+        segs.forEach((s,i)=> s.style.background = i> SEG*0.6 ? R.col : (Math.random()>.5?R.col:'#3A433D'));
+      }
+      const cur=data[data.length-1];
+      document.getElementById('sigVal').textContent=(cur>=0?'+':'')+cur.toFixed(2);
+      paint();
+    }
+    // init strip
+    segs.forEach((s,i)=> s.style.background = i> SEG*0.6 ? regimes[0].col : (Math.random()>.5?regimes[0].col:'#3A433D'));
+    paint();
+    if(!reduce) setInterval(step, 220);
+  })();
+</script>
+</body>
+</html>

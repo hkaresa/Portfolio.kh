@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>IQ — Decision Pipeline (Sample)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#171B18; --panel:#1C211E; --panel-2:#222825;
+    --ink:#ECEEE9; --muted:#9AA39B; --faint:#6E776F;
+    --celadon:#7FA793; --celadon-dim:#4E6E60;
+    --line:rgba(255,255,255,.09); --line-2:rgba(255,255,255,.05);
+    --amber:#C79A56; --rose:#C77B72; --ok:#7FA793;
+    --serif:"Newsreader",Georgia,serif;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; }
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:var(--mono); font-size:13.5px; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    padding:18px clamp(14px,3vw,26px) 26px;
+  }
+  .shell{ max-width:1080px; margin:0 auto; }
+
+  /* ---------- header ---------- */
+  .head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; padding-bottom:16px; border-bottom:1px solid var(--line); }
+  .head .id .mark{ font-family:var(--serif); font-size:1.9rem; font-weight:400; letter-spacing:.01em; }
+  .head .id .mark b{ color:var(--celadon); font-weight:500; }
+  .head .id .sub{ color:var(--muted); font-size:.74rem; letter-spacing:.04em; margin-top:2px; }
+  .pill{ font-size:.66rem; letter-spacing:.14em; text-transform:uppercase; color:var(--celadon); border:1px solid var(--celadon-dim); border-radius:999px; padding:5px 11px; white-space:nowrap; }
+
+  /* ---------- controls ---------- */
+  .controls{ display:flex; gap:18px 26px; flex-wrap:wrap; align-items:center; padding:16px 0; }
+  .ctl .lbl{ font-size:.62rem; letter-spacing:.14em; text-transform:uppercase; color:var(--faint); margin-bottom:6px; }
+  .seg{ display:inline-flex; border:1px solid var(--line); border-radius:6px; overflow:hidden; }
+  .seg button{
+    background:transparent; color:var(--muted); border:0; border-right:1px solid var(--line);
+    font-family:var(--mono); font-size:.72rem; letter-spacing:.03em; padding:7px 11px; cursor:pointer; transition:background .15s,color .15s;
+  }
+  .seg button:last-child{ border-right:0; }
+  .seg button:hover{ color:var(--ink); }
+  .seg button.on{ background:var(--celadon); color:#10140F; font-weight:500; }
+  .seg.frag button.on{ background:var(--amber); color:#10140F; }
+  .runbtn{ background:transparent; border:1px solid var(--line); color:var(--ink); border-radius:6px; padding:7px 13px; font-family:var(--mono); font-size:.72rem; cursor:pointer; letter-spacing:.03em; }
+  .runbtn:hover{ border-color:var(--celadon-dim); }
+
+  /* ---------- grid ---------- */
+  .grid{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px; margin-top:4px; }
+  @media (max-width:760px){ .grid{ grid-template-columns:1fr; } }
+  .panel{ background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:16px; }
+  .panel h3{ font-family:var(--mono); font-size:.62rem; letter-spacing:.16em; text-transform:uppercase; color:var(--faint); margin:0 0 13px; font-weight:600; }
+
+  /* ---------- regime card ---------- */
+  .regime-name{ font-family:var(--serif); font-size:1.45rem; font-weight:400; }
+  .regime-note{ color:var(--muted); font-size:.76rem; margin-top:3px; line-height:1.45; min-height:2.4em; }
+  .readouts{ display:grid; grid-template-columns:1fr 1fr; gap:9px 18px; margin-top:14px; padding-top:13px; border-top:1px solid var(--line-2); }
+  .ro{ display:flex; justify-content:space-between; font-size:.74rem; }
+  .ro .k{ color:var(--faint); } .ro .v{ color:var(--ink); }
+  .ro .v.hot{ color:var(--rose); } .ro .v.good{ color:var(--celadon); }
+  .params{ display:flex; gap:20px; margin-top:13px; padding-top:13px; border-top:1px solid var(--line-2); }
+  .param .pk{ font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:var(--faint); }
+  .param .pv{ font-family:var(--serif); font-size:1.2rem; }
+
+  /* ---------- gating matrix ---------- */
+  .matrix{ display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+  .cls{ border:1px solid var(--line); border-radius:6px; padding:11px 12px; transition:opacity .25s,border-color .25s,background .25s; }
+  .cls .top{ display:flex; align-items:center; justify-content:space-between; }
+  .cls .nm{ font-size:.82rem; color:var(--ink); }
+  .cls .st{ font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; }
+  .cls .dt{ font-size:.68rem; color:var(--faint); margin-top:5px; line-height:1.4; min-height:2.7em; }
+  .cls.on{ background:rgba(127,167,147,.07); border-color:var(--celadon-dim); }
+  .cls.on .st{ color:var(--celadon); }
+  .cls.off{ opacity:.4; }
+  .cls.off .st{ color:var(--faint); }
+
+  /* ---------- pipeline ---------- */
+  .pipe-wrap{ grid-column:1 / -1; }
+  .now{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
+  .now .sym{ font-family:var(--serif); font-size:1.5rem; }
+  .now .strat{ color:var(--muted); font-size:.76rem; }
+  .now .conf{ margin-left:auto; font-size:.74rem; color:var(--faint); }
+  .now .conf b{ color:var(--ink); font-weight:500; }
+  .stages{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; }
+  @media (max-width:680px){ .stages{ grid-template-columns:1fr 1fr; } }
+  .stage{ border:1px solid var(--line); border-radius:6px; padding:10px 11px; min-height:78px; transition:border-color .2s,background .2s; position:relative; }
+  .stage .sn{ font-size:.58rem; letter-spacing:.12em; text-transform:uppercase; color:var(--faint); }
+  .stage .sv{ font-size:.76rem; margin-top:7px; color:var(--ink); line-height:1.35; }
+  .stage .sv small{ color:var(--muted); font-size:.68rem; }
+  .stage.active{ border-color:var(--celadon); background:rgba(127,167,147,.06); }
+  .stage.pass{ border-color:var(--celadon-dim); }
+  .stage.fail{ border-color:rgba(199,123,114,.5); }
+  .stage .verdict{ font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; }
+  .verdict.ok{ color:var(--ok); } .verdict.no{ color:var(--rose); } .verdict.gate{ color:var(--amber); }
+
+  /* ---------- log + stats ---------- */
+  .log{ font-size:.74rem; }
+  .log .row{ display:grid; grid-template-columns:auto 1fr auto; gap:10px; padding:7px 0; border-bottom:1px solid var(--line-2); align-items:baseline; }
+  .log .t{ color:var(--faint); font-size:.66rem; }
+  .log .d{ color:var(--ink); }
+  .log .o{ font-size:.6rem; letter-spacing:.08em; text-transform:uppercase; white-space:nowrap; }
+  .o.exec{ color:var(--ok); } .o.block{ color:var(--rose); } .o.gated{ color:var(--amber); } .o.thresh{ color:var(--faint); }
+  .stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  @media (max-width:560px){ .stats{ grid-template-columns:1fr 1fr; } }
+  .stat .sk{ font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:var(--faint); }
+  .stat .sval{ font-family:var(--serif); font-size:1.45rem; margin-top:3px; }
+  .stat .sval.pos{ color:var(--celadon); }
+  .budget{ height:4px; background:var(--line); border-radius:2px; margin-top:8px; overflow:hidden; }
+  .budget i{ display:block; height:100%; background:var(--celadon); width:0; transition:width .4s; }
+  canvas#eq{ width:100%; height:60px; display:block; margin-top:6px; }
+
+  .foot{ margin-top:18px; padding-top:14px; border-top:1px solid var(--line); color:var(--faint); font-size:.68rem; line-height:1.6; }
+  .foot b{ color:var(--muted); font-weight:500; }
+  :focus-visible{ outline:2px solid var(--celadon); outline-offset:2px; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="head">
+    <div class="id">
+      <div class="mark"><b>IQ</b> trading agent</div>
+      <div class="sub">regime-gated · multi-strategy · Claude-filtered execution</div>
+    </div>
+    <span class="pill">Sample data · not a live book</span>
+  </div>
+
+  <div class="controls">
+    <div class="ctl">
+      <div class="lbl">Market regime</div>
+      <div class="seg" id="regimeSeg">
+        <button data-r="bull_trend" class="on">Bull</button>
+        <button data-r="bear_trend">Bear</button>
+        <button data-r="high_volatility">High-vol</button>
+        <button data-r="ranging">Ranging</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <div class="lbl">Fragility overlay</div>
+      <div class="seg frag" id="fragSeg">
+        <button data-f="NORMAL" class="on">Normal</button>
+        <button data-f="ELEVATED">Elevated</button>
+        <button data-f="DEFENSIVE">Defensive</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <div class="lbl">&nbsp;</div>
+      <button class="runbtn" id="runBtn">⏸ Pause</button>
+      <button class="runbtn" id="stepBtn">Step ▸</button>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- REGIME -->
+    <div class="panel">
+      <h3>Regime detector — SPY daily</h3>
+      <div class="regime-name" id="rName">Bull trend</div>
+      <div class="regime-note" id="rNote"></div>
+      <div class="readouts">
+        <div class="ro"><span class="k">SPY vs MA200</span><span class="v good" id="ro-ma">+4.1% above</span></div>
+        <div class="ro"><span class="k">RSI(14)</span><span class="v" id="ro-rsi">58</span></div>
+        <div class="ro"><span class="k">ADX(14)</span><span class="v" id="ro-adx">24</span></div>
+        <div class="ro"><span class="k">ATR %</span><span class="v" id="ro-atr">1.1%</span></div>
+        <div class="ro"><span class="k">UVXY overlay</span><span class="v" id="ro-vix">calm</span></div>
+        <div class="ro"><span class="k">Choppiness</span><span class="v" id="ro-chop">42 · trending</span></div>
+      </div>
+      <div class="params">
+        <div class="param"><div class="pk">Size mult</div><div class="pv" id="p-size">1.00×</div></div>
+        <div class="param"><div class="pk">Conf. floor</div><div class="pv" id="p-thr">0.73</div></div>
+        <div class="param"><div class="pk">Fragility</div><div class="pv" id="p-frag" style="color:var(--celadon)">NORMAL</div></div>
+      </div>
+    </div>
+
+    <!-- GATING -->
+    <div class="panel">
+      <h3>Strategy gating — which classes may fire</h3>
+      <div class="matrix" id="matrix">
+        <div class="cls" data-c="crypto"><div class="top"><span class="nm">Crypto</span><span class="st">—</span></div><div class="dt"></div></div>
+        <div class="cls" data-c="equity"><div class="top"><span class="nm">Equity (RS+VA / swing)</span><span class="st">—</span></div><div class="dt"></div></div>
+        <div class="cls" data-c="letf"><div class="top"><span class="nm">Leveraged ETF</span><span class="st">—</span></div><div class="dt"></div></div>
+        <div class="cls" data-c="scalp"><div class="top"><span class="nm">Scalp</span><span class="st">—</span></div><div class="dt"></div></div>
+      </div>
+    </div>
+
+    <!-- PIPELINE -->
+    <div class="panel pipe-wrap">
+      <h3>Signal pipeline — live walk-through</h3>
+      <div class="now">
+        <span class="sym" id="nSym">—</span>
+        <span class="strat" id="nStrat"></span>
+        <span class="conf" id="nConf"></span>
+      </div>
+      <div class="stages">
+        <div class="stage" data-s="gate"><div class="sn">1 · Regime gate</div><div class="sv" id="st-gate">—</div></div>
+        <div class="stage" data-s="thr"><div class="sn">2 · Confidence</div><div class="sv" id="st-thr">—</div></div>
+        <div class="stage" data-s="trap"><div class="sn">3 · Claude trap filter</div><div class="sv" id="st-trap">—</div></div>
+        <div class="stage" data-s="size"><div class="sn">4 · ATR sizing</div><div class="sv" id="st-size">—</div></div>
+        <div class="stage" data-s="out"><div class="sn">5 · Outcome</div><div class="sv" id="st-out">—</div></div>
+      </div>
+    </div>
+
+    <!-- LOG -->
+    <div class="panel">
+      <h3>Recent decisions</h3>
+      <div class="log" id="log"></div>
+    </div>
+
+    <!-- STATS -->
+    <div class="panel">
+      <h3>Book state — sample session</h3>
+      <div class="stats">
+        <div class="stat"><div class="sk">Open / max</div><div class="sval" id="s-open">0 / 6</div></div>
+        <div class="stat"><div class="sk">Day P&L</div><div class="sval pos" id="s-pnl">+0.0%</div></div>
+        <div class="stat"><div class="sk">Portfolio heat</div><div class="sval" id="s-heat">0%</div></div>
+        <div class="stat"><div class="sk">Trap calls</div><div class="sval" id="s-calls">0 / 40</div><div class="budget"><i id="s-bud"></i></div></div>
+      </div>
+      <div style="margin-top:16px"><div class="sk" style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)">Equity curve (sample)</div>
+      <canvas id="eq" width="600" height="60"></canvas></div>
+    </div>
+
+  </div>
+
+  <div class="foot">
+    <b>Illustrative reconstruction of IQ's live decision pipeline.</b> Regime logic, gating, the fragility overlay, the
+    0.78 confidence floor and the Claude trap filter mirror the running system; all prices, verdicts, sizes and P&L shown
+    here are sample data. The live agent runs on Alpaca with private credentials — no keys or live positions are exposed by this demo.
+  </div>
+</div>
+
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---- real REGIME_CONFIG (from regime_detector.py) ---- */
+const REGIME = {
+  bull_trend:      { name:"Bull trend",      crypto:1, equity:1, letf:1, scalp:1, boost:-0.05, size:1.00,
+    note:"Full deployment — trending market.",
+    read:{ ma:["+4.1% above","good"], rsi:["58",""], adx:["24",""], atr:["1.1%",""], vix:["calm",""], chop:["42 · trending",""] } },
+  bear_trend:      { name:"Bear trend",      crypto:1, equity:1, letf:1, scalp:1, boost:+0.03, size:0.70,
+    note:"Defensive — smaller positions; RS+VA still allowed, bear/vol LETFs valid.",
+    read:{ ma:["-2.6% below","hot"], rsi:["41",""], adx:["27",""], atr:["1.5%",""], vix:["building",""], chop:["38 · trending",""] } },
+  high_volatility: { name:"High volatility", crypto:1, equity:1, letf:1, scalp:1, boost:+0.04, size:0.55,
+    note:"Vol spike — sizing cut hard; scalps active, LETFs decay fast.",
+    read:{ ma:["+0.4% above",""], rsi:["49",""], adx:["19",""], atr:["2.3%","hot"], vix:["fear spike","hot"], chop:["55 · mixed",""] } },
+  ranging:         { name:"Ranging",         crypto:1, equity:0, letf:0, scalp:1, boost:+0.09, size:0.50,
+    note:"No trend — cash preferred; equity & LETF momentum disabled, cleanest signals only.",
+    read:{ ma:["+0.2% flat",""], rsi:["50",""], adx:["14","hot"], atr:["0.9%",""], vix:["calm",""], chop:["68 · choppy","hot"] } },
+};
+const GATE_NOTE = {
+  crypto:"Direction-neutral; runs in every regime. (Crypto scalp currently disabled pending 50-trade validation.)",
+  equity:"RS+VA & multi-day swing on the 18-name watchlist.",
+  letf:"3× ETFs — bull set in uptrends, bear/vol set in downturns. Semi-gated for TQQQ/FNGU.",
+  scalp:"Short-duration momentum. Universe empty — disabled after an 11% win-rate post-mortem.",
+};
+/* ---- fragility overlay (fragility_detector.py) ---- */
+const FRAG = {
+  NORMAL:    { mult:1.0, cap:3, col:"var(--celadon)" },
+  ELEVATED:  { mult:0.5, cap:1, col:"var(--amber)" },
+  DEFENSIVE: { mult:0.0, cap:0, col:"var(--rose)" },
+};
+const FLOOR = 0.78;  // MIN_SIGNAL_CONFIDENCE
+
+/* ---- sample signal pool (real watchlist symbols + strategies) ---- */
+const SIGNALS = [
+  { sym:"AVGO", cls:"equity", strat:"relative_strength (RS+VA)", conf:0.84, atrStop:0.078,
+    trap:{approve:true, searches:1, reason:"AI-networking ASIC demand confirmed; genuine institutional accumulation, no adverse news."} },
+  { sym:"TQQQ", cls:"letf", strat:"leveraged_etf · bull pullback", conf:0.81, atrStop:0.060,
+    trap:{approve:true, searches:0, reason:"QQQ uptrend intact, pullback resolving; semiconductor health score positive."} },
+  { sym:"IONQ", cls:"equity", strat:"equity_swing · 20d breakout", conf:0.76, atrStop:0.090,
+    trap:null },
+  { sym:"ETH/USD", cls:"crypto", strat:"momentum · 4H trend", conf:0.80, atrStop:0.045,
+    trap:{approve:true, searches:1, reason:"BTC leadership intact; 4H trend and volume confirm continuation."} },
+  { sym:"SOXL", cls:"letf", strat:"leveraged_etf · semi-gated", conf:0.83, atrStop:0.060,
+    trap:{approve:true, searches:2, reason:"SOXX breadth positive and NVDA relative strength strong — semi gate clears."} },
+  { sym:"HIMS", cls:"equity", strat:"relative_strength (RS+VA)", conf:0.80, atrStop:0.085,
+    trap:{approve:false, searches:2, reason:"Spike driven by a regulatory-inquiry headline; likely to reverse, no real demand catalyst."} },
+  { sym:"NBIS", cls:"equity", strat:"equity_swing · 20d breakout", conf:0.82, atrStop:0.082,
+    trap:{approve:true, searches:1, reason:"AI-cloud capacity expansion is real; breakout volume genuine, not a one-day pop."} },
+  { sym:"RKLB", cls:"equity", strat:"relative_strength (RS+VA)", conf:0.85, atrStop:0.080,
+    trap:{approve:true, searches:1, reason:"Launch cadence and backlog catalyst confirmed; accumulation over multiple sessions."} },
+  { sym:"SQQQ", cls:"letf", strat:"leveraged_etf · bear hedge", conf:0.79, atrStop:0.060,
+    trap:{approve:true, searches:1, reason:"Breadth deteriorating into the close; valid defensive hedge for the regime."} },
+];
+
+let curRegime = "bull_trend", curFrag = "NORMAL";
+let ptr = 0, playing = true, busy = false;
+let openPos = 0, dayPnl = 0, calls = 0;
+const eqPts = [1.0];
+
+/* ---------- rendering ---------- */
+function renderRegime(){
+  const R = REGIME[curRegime], F = FRAG[curFrag];
+  $("#rName").textContent = R.name;
+  $("#rNote").textContent = R.note;
+  const setRo=(id,arr)=>{ const e=$(id); e.textContent=arr[0]; e.className="v"+(arr[1]?" "+arr[1]:""); };
+  setRo("#ro-ma",R.read.ma); setRo("#ro-rsi",R.read.rsi); setRo("#ro-adx",R.read.adx);
+  setRo("#ro-atr",R.read.atr); setRo("#ro-vix",R.read.vix); setRo("#ro-chop",R.read.chop);
+  $("#p-size").textContent = R.size.toFixed(2)+"×";
+  $("#p-thr").textContent  = (FLOOR + R.boost).toFixed(2);
+  $("#p-frag").textContent = curFrag; $("#p-frag").style.color = F.col;
+  // gating matrix
+  document.querySelectorAll(".cls").forEach(el=>{
+    const c = el.dataset.c, on = !!R[c];
+    el.classList.toggle("on",on); el.classList.toggle("off",!on);
+    el.querySelector(".st").textContent = on ? "enabled" : "gated off";
+    el.querySelector(".dt").textContent = GATE_NOTE[c];
+  });
+}
+
+function logRow(sig, outcome, cls){
+  const wrap = $("#log");
+  const t = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const row = document.createElement("div"); row.className="row";
+  row.innerHTML = `<span class="t">${t}</span><span class="d">${sig.sym} · ${sig.strat.split(' ')[0]}</span><span class="o ${cls}">${outcome}</span>`;
+  wrap.prepend(row);
+  while(wrap.children.length>7) wrap.removeChild(wrap.lastChild);
+}
+
+function setStat(){
+  $("#s-open").textContent = openPos+" / 6";
+  $("#s-pnl").textContent = (dayPnl>=0?"+":"")+dayPnl.toFixed(1)+"%";
+  $("#s-pnl").style.color = dayPnl>=0 ? "var(--celadon)" : "var(--rose)";
+  $("#s-heat").textContent = Math.min(50,Math.round(openPos*8.5))+"%";
+  $("#s-calls").textContent = calls+" / 40";
+  $("#s-bud").style.width = (calls/40*100)+"%";
+  drawEq();
+}
+function drawEq(){
+  const cv=$("#eq"), ctx=cv.getContext("2d"); const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const lo=Math.min(...eqPts,0.99), hi=Math.max(...eqPts,1.01), pad=6;
+  const x=i=>(i/Math.max(1,eqPts.length-1))*W, y=v=>H-pad-((v-lo)/(hi-lo||1))*(H-2*pad);
+  ctx.beginPath(); eqPts.forEach((v,i)=> i?ctx.lineTo(x(i),y(v)):ctx.moveTo(x(i),y(v)));
+  ctx.strokeStyle="#7FA793"; ctx.lineWidth=1.4; ctx.stroke();
+}
+
+/* ---------- pipeline engine ---------- */
+const STAGES=["gate","thr","trap","size","out"];
+function resetStages(){
+  STAGES.forEach(s=>{ const el=document.querySelector(`.stage[data-s="${s}"]`); el.className="stage";
+    $("#st-"+s).innerHTML="—"; });
+}
+function stageEl(s){ return document.querySelector(`.stage[data-s="${s}"]`); }
+const wait = ms => new Promise(r=>setTimeout(r, reduce?0:ms));
+
+async function processSignal(sig){
+  busy = true; resetStages();
+  $("#nSym").textContent = sig.sym;
+  $("#nStrat").textContent = sig.strat;
+  $("#nConf").innerHTML = `signal confidence <b>${sig.conf.toFixed(2)}</b>`;
+  const R = REGIME[curRegime], F = FRAG[curFrag];
+  const eff = FLOOR + R.boost;
+
+  // Stage 1 — regime gate
+  stageEl("gate").classList.add("active"); await wait(620);
+  const allowed = !!R[sig.cls];
+  if(!allowed){
+    stageEl("gate").className="stage fail";
+    $("#st-gate").innerHTML = `<span class="verdict gate">gated off</span><br><small>${sig.cls} disabled in ${R.name.toLowerCase()}</small>`;
+    finish(sig,"Gated — regime","gated"); return;
+  }
+  stageEl("gate").className="stage pass";
+  $("#st-gate").innerHTML = `<span class="verdict ok">pass</span><br><small>${sig.cls} enabled</small>`;
+
+  // Stage 2 — confidence floor
+  stageEl("thr").classList.add("active"); await wait(560);
+  if(sig.conf < eff){
+    stageEl("thr").className="stage fail";
+    $("#st-thr").innerHTML = `<span class="verdict no">below floor</span><br><small>${sig.conf.toFixed(2)} &lt; ${eff.toFixed(2)}</small>`;
+    finish(sig,"Below confidence floor","thresh"); return;
+  }
+  stageEl("thr").className="stage pass";
+  $("#st-thr").innerHTML = `<span class="verdict ok">≥ ${eff.toFixed(2)}</span><br><small>${sig.conf.toFixed(2)} clears floor</small>`;
+
+  // Stage 3 — Claude trap filter
+  stageEl("trap").classList.add("active");
+  $("#st-trap").innerHTML = `<small>Haiku 4.5 · searching…</small>`;
+  await wait(sig.trap.searches?900+sig.trap.searches*260:700);
+  calls++; setStat();
+  if(!sig.trap.approve){
+    stageEl("trap").className="stage fail";
+    $("#st-trap").innerHTML = `<span class="verdict no">block</span><br><small>${sig.trap.reason}</small>`;
+    finish(sig,"Blocked — trap filter","block"); return;
+  }
+  stageEl("trap").className="stage pass";
+  $("#st-trap").innerHTML = `<span class="verdict ok">approve · ${sig.trap.searches} search${sig.trap.searches===1?"":"es"}</span><br><small>${sig.trap.reason}</small>`;
+
+  // Stage 4 — ATR sizing
+  stageEl("size").classList.add("active"); await wait(560);
+  if(F.mult===0){
+    stageEl("size").className="stage fail";
+    $("#st-size").innerHTML = `<span class="verdict no">no entry</span><br><small>DEFENSIVE fragility — new entries halted</small>`;
+    finish(sig,"Held — defensive overlay","gated"); return;
+  }
+  let pct = (0.02 / sig.atrStop) * R.size * F.mult * 100;
+  let capped = false;
+  const cap = sig.cls==="letf" ? 30 : 40;
+  if(pct>cap){ pct=cap; capped=true; }
+  stageEl("size").className="stage pass";
+  $("#st-size").innerHTML = `<span class="verdict ok">${pct.toFixed(1)}%</span><br><small>2% risk ÷ ${(sig.atrStop*100).toFixed(0)}% ATR · ${R.size.toFixed(2)}×${F.mult}${capped?" · capped":""}</small>`;
+
+  // Stage 5 — outcome
+  stageEl("out").classList.add("active"); await wait(420);
+  if(openPos>=6){
+    stageEl("out").className="stage fail";
+    $("#st-out").innerHTML = `<span class="verdict gate">queued</span><br><small>6/6 positions open</small>`;
+    finish(sig,"Queued — book full","gated"); return;
+  }
+  stageEl("out").className="stage pass";
+  $("#st-out").innerHTML = `<span class="verdict ok">executed</span><br><small>${sig.sym} · ${pct.toFixed(1)}% of book</small>`;
+  openPos = Math.min(6, openPos+1);
+  const move = (Math.random()*1.4 - 0.35);
+  dayPnl += move; eqPts.push(eqPts[eqPts.length-1]*(1+move/100)); if(eqPts.length>60) eqPts.shift();
+  setStat();
+  finish(sig,"Executed","exec");
+}
+function finish(sig, outcome, cls){
+  logRow(sig, outcome, cls);
+  busy=false;
+}
+
+/* ---------- loop ---------- */
+async function tick(){
+  if(busy) return;
+  const sig = SIGNALS[ptr % SIGNALS.length]; ptr++;
+  await processSignal(sig);
+}
+let timer=null;
+function startLoop(){ if(timer) return; timer=setInterval(()=>{ if(playing && !busy) tick(); }, reduce?1800:2600); }
+function stopLoop(){ clearInterval(timer); timer=null; }
+
+/* ---------- controls ---------- */
+$("#regimeSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b)return;
+  document.querySelectorAll("#regimeSeg button").forEach(x=>x.classList.remove("on")); b.classList.add("on");
+  curRegime=b.dataset.r; renderRegime(); });
+$("#fragSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b)return;
+  document.querySelectorAll("#fragSeg button").forEach(x=>x.classList.remove("on")); b.classList.add("on");
+  curFrag=b.dataset.f; renderRegime(); });
+$("#runBtn").addEventListener("click",()=>{ playing=!playing; $("#runBtn").textContent = playing?"⏸ Pause":"▶ Play"; });
+$("#stepBtn").addEventListener("click",()=>{ if(!busy) tick(); });
+
+/* ---------- init ---------- */
+renderRegime(); setStat(); drawEq();
+if(reduce){ playing=false; $("#runBtn").textContent="▶ Play"; tick(); }
+else { startLoop(); tick(); }
+</script>
+</body>
+</html>
