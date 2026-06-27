@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Karesa — Asset Management & Global Macro</title>
+<title>Karesa Hui — Asset Management & Global Macro</title>
 <meta name="description" content="Fundamental judgment and systematic execution at the seam of asset management and global macro." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -220,6 +220,34 @@
   footer .mono{ font-size:.72rem; color:var(--stone); letter-spacing:.04em; }
   footer .band.mini{ width:120px; }
 
+  /* ===================== hero v2 (portrait-led) ===================== */
+  .hero-grid{ display:grid; grid-template-columns:1.35fr .92fr; gap:clamp(30px,5vw,72px); align-items:center; }
+  .hero .intro{ margin-top:22px; max-width:44ch; color:var(--stone); font-size:1.06rem; }
+  .cta-row{ display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-top:30px; }
+  .cta{ display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:.76rem;
+    letter-spacing:.04em; text-decoration:none; color:var(--paper); background:var(--celadon-deep);
+    padding:12px 20px; border-radius:6px; transition:background .2s, transform .2s; }
+  .cta:hover{ background:var(--ink); transform:translateY(-1px); }
+  .cta.ghost{ color:var(--ink); background:transparent; border:1px solid var(--line-strong); }
+  .cta.ghost:hover{ border-color:var(--celadon-deep); color:var(--celadon-deep); transform:translateY(-1px); }
+  .portrait{ position:relative; aspect-ratio:4/5; border-radius:10px; overflow:hidden;
+    background:linear-gradient(155deg,#E4E8E1,#D2D9D1); border:1px solid var(--line); }
+  .portrait img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .portrait.empty img{ display:none; }
+  .portrait.empty::after{ content:"Add  headshot.jpg"; position:absolute; inset:0; display:flex;
+    align-items:center; justify-content:center; text-align:center; padding:20px; font-family:var(--mono);
+    font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--stone); }
+  @media (max-width:760px){ .hero-grid{ grid-template-columns:1fr; gap:30px; } .portrait{ max-width:280px; } }
+
+  /* ===================== bio block ===================== */
+  .bio h2{ font-weight:300; font-size:clamp(1.8rem,3.2vw,2.5rem); letter-spacing:-.015em; margin:.2em 0 .55em; }
+  .bio .lead{ font-size:1.2rem; line-height:1.5; max-width:60ch; }
+  .bio .body p{ margin:0 0 1.05em; max-width:62ch; }
+  .tags{ display:flex; flex-wrap:wrap; gap:8px; margin:28px 0 0; }
+  .tags span{ font-family:var(--mono); font-size:.66rem; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--celadon-deep); border:1px solid var(--line-strong); border-radius:999px; padding:5px 12px; }
+  .bio .edu{ font-family:var(--mono); font-size:.76rem; color:var(--stone); margin-top:26px; line-height:1.85; }
+
   :focus-visible{ outline:2px solid var(--celadon-deep); outline-offset:3px; border-radius:2px; }
 </style>
 </head>
@@ -243,38 +271,48 @@
 
   <!-- ============ HERO ============ -->
   <section class="hero" style="border-top:none">
-    <div class="wrap">
-      <div class="band reveal" id="heroBand" aria-hidden="true"></div>
-      <p class="eyebrow reveal">Asset management · Global macro</p>
-      <h1 class="reveal">
-        Markets move in <em>regimes</em>. The work is reading which one you're in —
-        and holding both the <em>judgment</em> and the <em>systems</em> to act before the room agrees.
-      </h1>
-      <div class="who reveal">
-        <!-- TODO: replace with your full name -->
-        <span class="name">Karesa&nbsp;<span style="color:var(--stone)">[ Surname ]</span></span>
-        <span class="locate">MSc Finance &amp; Accounting, Imperial College London · London</span>
+    <div class="wrap hero-grid">
+      <div class="hero-text">
+        <div class="band reveal" id="heroBand" aria-hidden="true"></div>
+        <p class="eyebrow reveal">Asset management · Global macro</p>
+        <h1 class="reveal">
+          A finance student working where fundamental <em>judgment</em> meets the <em>systems</em> I build to test it.
+        </h1>
+        <p class="intro reveal">Equity theses built by hand, macro views I date and live with, and a live trading agent — the work I make to understand markets, not just describe them.</p>
+        <div class="cta-row reveal">
+          <a class="cta" href="#contact">Get in touch →</a>
+          <a class="cta ghost" href="#judgment">See the work</a>
+        </div>
+        <div class="who reveal">
+          <span class="name">Karesa Hui</span>
+          <span class="locate">MSc Finance &amp; Accounting, Imperial College London · London</span>
+        </div>
+      </div>
+      <!-- Drop a file named headshot.jpg into the repo (next to index.html) and it appears here -->
+      <div class="portrait reveal empty">
+        <img src="headshot.jpg" alt="Karesa Hui"
+             onload="this.closest('.portrait').classList.remove('empty')"
+             onerror="this.closest('.portrait').classList.add('empty')">
       </div>
     </div>
   </section>
 
-  <!-- ============ ABOUT ============ -->
+  <!-- ============ ABOUT / BIO ============ -->
   <section id="about">
-    <div class="wrap about-grid">
+    <div class="wrap bio">
       <p class="eyebrow">About</p>
-      <div>
-        <div class="body">
-          <p>I enjoy working at crossroads between fundamental judgment and systematic execution. </p>
-          <p>My focus is in asset management and global macroeconomics. On the discretionary side, that means valuation and contrarian theses built bottom-up. On the systematic side, it means I design, code, and run live strategies — with the model deciding when <em>not</em> to trade treated as seriously as when to.</p>
-        </div>
-        <div class="aside" style="margin-top:34px">
-          <span class="k">Education</span>
-          MSc Finance &amp; Accounting — Imperial College London<br>
-          BA Business Administration — UC Irvine
-          <span class="k">Interests</span>
-          Global macro · systematic strategy · equity research<br>
-          Markets as cycles · the discipline of restraint
-        </div>
+      <h2>I'm Karesa.</h2>
+      <div class="body">
+        <p class="lead">I build things to understand them. Theses, models, a trading agent that runs on its own — if I can't make an idea work in practice, I don't fully trust that I understand it.</p>
+        <p>I'm finishing my MSc in Finance at Imperial. Before that, UC Irvine, where I led the equity team at the student investment fund and co-founded a Scholars of Finance chapter. Somewhere in the middle, six months and ten countries on my own — which quietly rearranged what I want this work to be about: less the title, more the judgment.</p>
+        <p>These days I split my time between two ways of reading a market — the fundamental analyst's and the systematic engineer's — and I'm looking for asset management and global macro roles where both count.</p>
+      </div>
+      <div class="tags">
+        <span>Global macro</span><span>Equity research</span><span>Systematic strategy</span><span>Regime detection</span><span>Python</span><span>Markets as cycles</span>
+      </div>
+      <div class="edu">
+        MSc Finance &amp; Accounting — Imperial College London<br>
+        BA Business Administration — UC Irvine · Dean's Honor List
       </div>
     </div>
   </section>
@@ -286,7 +324,7 @@
         <span class="num">01 / Judgment</span>
         <div>
           <h2>Fundamental work</h2>
-          <p>Selected equity, valuation, and M&amp;A analysis. Replace each link with a live deck, write-up, or PDF.</p>
+          <p>Before I trusted a system with a dollar, I learned to value a business by hand. Equity theses built bottom-up, a valuation, and a deal pulled apart.</p>
         </div>
       </div>
       <div class="ledger">
@@ -332,7 +370,7 @@
         <span class="num">02 / Systems</span>
         <div>
           <h2>Systematic work</h2>
-          <p>Strategies and tooling I design and run. Public demos use historical or sample data — live systems and credentials stay private.</p>
+          <p>A backtest tells you what would have worked. Running it live — even on a small account — tells you what actually does. These are the systems I build to find out. Public demos use sample data; credentials stay private.</p>
         </div>
       </div>
       <div class="ledger">
@@ -398,7 +436,7 @@
         <span class="num">04 / Views</span>
         <div>
           <h2>Macro views</h2>
-          <p>A dated record of how a market view took shape — bottom-up from a single name into a worldview.</p>
+          <p>Anyone can have a take. Fewer write them down, date them, and live with being wrong. This is that record — bottom-up from a single name into a worldview.</p>
         </div>
       </div>
       <div>
@@ -420,7 +458,7 @@
   <section id="contact" class="contact">
     <div class="wrap">
       <p class="eyebrow">Contact</p>
-      <p class="lede">Open to asset management and global macro roles — and to a <em>good conversation</em> regardless.</p>
+      <p class="lede">Let's talk. I'm open to asset management and global macro roles — and to a <em>good conversation</em> regardless.</p>
       <div class="contact-links">
         <!-- TODO: fill these in -->
         <a href="mailto:you@email.com">you@email.com</a>
@@ -434,7 +472,7 @@
 
 <footer>
   <div class="wrap">
-    <span class="mono">© <span id="yr"></span> Karesa · London</span>
+    <span class="mono">© <span id="yr"></span> Karesa Hui · London</span>
     <div class="band mini" aria-hidden="true"></div>
     <span class="mono">Built and maintained by hand.</span>
   </div>
