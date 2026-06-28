@@ -151,6 +151,8 @@
   .item .meta{ font-family:var(--mono); font-size:.72rem; color:var(--stone); white-space:nowrap; }
   .item .arrow{ font-family:var(--mono); color:var(--celadon-deep); opacity:0; transition:opacity .25s; }
   .item:hover .arrow{ opacity:1; }
+  .item .meta a{ color:var(--celadon-deep); text-decoration:none; }
+  .item .meta a:hover{ text-decoration:underline; }
   @media (max-width:720px){
     .item{ grid-template-columns:1fr; gap:6px; padding:22px 0; }
     .item .meta{ order:3; }
@@ -319,7 +321,6 @@
         <span class="num">01 / Judgment</span>
         <div>
           <h2>Fundamental work</h2>
-          <p>Before I trusted a system with a dollar, I learned to value a business by hand. Equity theses built bottom-up, a valuation, and a deal pulled apart.</p>
         </div>
       </div>
       <div class="ledger">
@@ -330,22 +331,21 @@
           <span class="meta">Deck →</span>
           <span class="arrow">↗</span>
         </a>
-        <a class="item" href="lbo-simulation.pdf" target="_blank" rel="noopener">
+        <div class="item">
           <span class="tag">Leveraged buyout</span>
           <h3>Buy-side LBO simulation <span class="sub">A live auction across three targets: full LBO models with EBITDA normalisation, debt sizing, and covenant design, each bid under a 15% IRR floor. Won Star Hotels at €1.28bn (9.3x) by pairing a margin-of-safety price with a more aggressive debt package.</span></h3>
-          <span class="meta">Reasoning brief →</span>
-          <span class="arrow">↗</span>
-        </a>
+          <span class="meta"><a href="lbo-simulation.pdf" target="_blank" rel="noopener">Brief →</a>&nbsp;&nbsp;<a href="lbo-model.xlsx">Model →</a></span>
+        </div>
         <a class="item" href="succession-capital.pdf" target="_blank" rel="noopener">
           <span class="tag">Private equity · Strategy</span>
           <h3>Succession Capital <span class="sub">A buyout fund thesis targeting profitable, founder-owned German Mittelstand companies facing succession with no heir. Sets out the investment criteria, value-creation plan, returns, and fund structure — as a long-term operator, not an asset-stripper.</span></h3>
           <span class="meta">Deck →</span>
           <span class="arrow">↗</span>
         </a>
-        <a class="item" href="#">
+        <a class="item" href="novozymes-mna.pdf" target="_blank" rel="noopener">
           <span class="tag">M&amp;A</span>
-          <h3>Novozymes / Chr. Hansen <span class="sub">Deal analysis of the biosolutions merger — the synergy case, accretion, and the regulatory path.</span></h3>
-          <span class="meta">Analysis →</span>
+          <h3>Novozymes / Chr. Hansen <span class="sub">An NPV analysis of the all-stock biosolutions merger: synergies worth ~€1.7bn against a premium ~€1.3bn larger — value-destructive even on full delivery. Traces the 15% announcement-day drop through EPS dilution, a principal–principal governance conflict, and above-precedent pricing.</span></h3>
+          <span class="meta">Case study →</span>
           <span class="arrow">↗</span>
         </a>
       </div>
